@@ -12,14 +12,44 @@
       var ctx = eCanvas.getContext("2d");
 
       ctx.fillText ("Olá Mundo!",10 ,10);
-      ctx.fillStyle = "blue";
-      ctx.fillRect(20, 50, 15, 15);
-      ctx.lineWidth = 2;
-      ctx.strokeRect(20, 50, 15, 15);
-      ctx.fillStyle = "red";
-      ctx.fillRect(40, 50, 15, 15);
-      ctx.lineWidth = 2;
-      ctx.strokeRect(40, 50, 15, 15);
+
+      var azul = {
+        x: 0,
+        y: 50,
+      };
+
+      var fps = 60;
+
+      var dt = 1 / fps;
+
+      var factor = 10;
+
+      function desenhaAzul(ctx) {
+        ctx.fillStyle = "blue";
+        ctx.fillRect(azul.x, azul.y, 15, 15);
+        ctx.lineWidth = 2;
+        ctx.strokeRect(azul.x, azul.y, 15, 15);
+      }
+
+      function desenhaVermelho(ctx) {
+        ctx.fillStyle = "red";
+        ctx.fillRect(40, 50, 15, 15);
+        ctx.lineWidth = 2;
+        ctx.strokeRect(40, 50, 15, 15);
+      }
+
+      setInterval(desenha, 1000/60);
+
+      function desenha() {
+        ctx.clearRect(0,0, eCanvas.width, eCanvas.height);
+        if(azul.x + factor*dt > eCanvas.width || azul.x + factor*dt < 0)
+          factor = -1 * factor;
+
+        azul.x = azul.x + factor*dt
+        desenhaAzul(ctx);
+        desenhaVermelho(ctx);
+      }
+
     </script>
   </body>
 </html>
