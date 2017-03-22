@@ -26,32 +26,55 @@
       var atual = new Date();
       var anterior = new Date();
 
-      function desenhaAzul(ctx) {
-        ctx.fillStyle = "blue";
-        ctx.fillRect(azul.x, azul.y, 15, 15);
-        ctx.lineWidth = 2;
-        ctx.strokeRect(azul.x, azul.y, 15, 15);
-      }
-
-      function desenhaVermelho(ctx) {
-        ctx.fillStyle = "red";
-        ctx.fillRect(40, 50, 15, 15);
-        ctx.lineWidth = 2;
-        ctx.strokeRect(40, 50, 15, 15);
-      }
-
       desenha();
 
       function desenha() {
         requestAnimationFrame(desenha);
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, eCanvas.width, eCanvas.height);
         atual = new Date();
         dt = (atual - anterior) / 1000;
         azul.mover(dt);
+        vermelho.mover(dt);
         ctx.fillText("dt: "+dt+" fps: "+1/dt,20,20);
         azul.desenhar(ctx);
-        desenhaVermelho(ctx);
+        vermelho.desenhar(ctx);
         anterior = atual;
       }
+
+      addEventListener("keydown",function(e){
+        switch (e.keyCode) {
+          case 37:
+            azul.vx = -100;
+            break;
+          case 38:
+            azul.vy = -100;
+            break;
+          case 39:
+            azul.vx = +100;
+            break;
+          case 40:
+            azul.vy = +100;
+            break;
+        }
+      });
+
+      addEventListener("keyup",function(e){
+        switch (e.keyCode) {
+          case 37:
+            azul.vx = 0;
+            break;
+          case 38:
+            azul.vy = 0;
+            break;
+          case 39:
+            azul.vx = 0;
+            break;
+          case 40:
+            azul.vy = 0;
+            break;
+        }
+      });
 
     </script>
   </body>
