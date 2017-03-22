@@ -16,9 +16,9 @@
       ctx.fillText ("Olá Mundo!",10 ,10);
 
       var azul = new Sprite();
-      var vermelho = new Sprite();
-      vermelho.x = 100;
-      vermelho.y = 100;
+      var fuel = 100;
+      var acelerandoX = false;
+      var acelerandoY = false;
 
       var fps = 60;
       var dt = 1 / fps;
@@ -34,11 +34,24 @@
         ctx.fillRect(0, 0, eCanvas.width, eCanvas.height);
         atual = new Date();
         dt = (atual - anterior) / 1000;
+        ctx.fillStyle = "green";
+        ctx.fillRect(20, 20, fuel, 5);
+        ctx.strokeRect(20, 20, fuel, 5);
+        if(acelerandoX == true && fuel > 0) {
+           fuel = fuel - 5*dt;
+        }
+        if(acelerandoY == true && fuel > 0) {
+          fuel = fuel - 15*dt;
+        }
         azul.mover(dt);
-        vermelho.mover(dt);
-        ctx.fillText("dt: "+dt+" fps: "+1/dt,20,20);
         azul.desenhar(ctx);
-        vermelho.desenhar(ctx);
+        if(azul.y > eCanvas.height) {
+            azul.x = 150;
+            azul.y = 0;
+            azul.vy = 0;
+            azul.ay = 0;
+            fuel = 100;
+        }
         anterior = atual;
       }
 
@@ -46,15 +59,19 @@
         switch (e.keyCode) {
           case 37:
             azul.ax = -100;
+            acelerandoX = true;
             break;
           case 38:
             azul.ay = -100;
+            acelerandoY = true;
             break;
           case 39:
             azul.ax = +100;
+            acelerandoX = true;
             break;
           case 40:
             azul.ay = +100;
+            acelerandoY = true;
             break;
         }
       });
@@ -63,15 +80,19 @@
         switch (e.keyCode) {
           case 37:
             azul.ax = 0;
+            acelerandoX = false;
             break;
           case 38:
             azul.ay = 0;
+            acelerandoY = false;
             break;
           case 39:
             azul.ax = 0;
+            acelerandoX = false;
             break;
           case 40:
             azul.ay = 0;
+            acelerandoY = false;
             break;
         }
       });
