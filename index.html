@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>DCC104 - Exemplo 01</title>
+    <script src="Sprite.js">
+    </script>
   </head>
   <body>
     <h1>DCC104 - Exemplo 01</h1>
@@ -13,10 +15,10 @@
 
       ctx.fillText ("Olá Mundo!",10 ,10);
 
-      var azul = {
-        x: 0,
-        y: 50,
-      };
+      var azul = new Sprite();
+      var vermelho = new Sprite();
+      vermelho.x = 100;
+      vermelho.y = 100;
 
       var fps = 60;
       var dt = 1 / fps;
@@ -44,13 +46,9 @@
         requestAnimationFrame(desenha);
         atual = new Date();
         dt = (atual - anterior) / 1000;
-        ctx.clearRect(0,0, eCanvas.width, eCanvas.height);
-        if(azul.x + factor*dt > eCanvas.width || azul.x + factor*dt < 0)
-          factor = -1 * factor;
-
-        azul.x = azul.x + factor*dt
+        azul.mover(dt);
         ctx.fillText("dt: "+dt+" fps: "+1/dt,20,20);
-        desenhaAzul(ctx);
+        azul.desenhar(ctx);
         desenhaVermelho(ctx);
         anterior = atual;
       }
