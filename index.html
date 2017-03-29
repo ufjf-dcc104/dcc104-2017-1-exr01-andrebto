@@ -8,15 +8,48 @@
   </head>
   <body>
     <h1>DCC104 - Exemplo 01</h1>
-    <canvas></canvas>
+    <canvas height = 500 style="background-image: url('img.jpg');"></canvas>
     <script>
       var eCanvas = document.getElementsByTagName("canvas")[0];
       var ctx = eCanvas.getContext("2d");
-
-      ctx.fillText ("Olá Mundo!",10 ,10);
-
+	  var fundo = new Image();
+	  var time = 0;
+      fundo.onload = function() {
+        ctx.drawImage(fundo, 0, 0);
+      };
+      fundo.src = 'img.jpg';
       var azul = new Sprite();
+      azul.color = "blue";
+      azul.x = 150;
+      azul.y = 10;
+      azul.w = 15;
+      azul.h = 15;
+
       var fuel = 100;
+      var barFuel = new Sprite();
+      barFuel.color = "green";
+      barFuel.x = 30;
+      barFuel.y = 5;
+      barFuel.w = fuel;
+      barFuel.h = 5;
+
+      var life = 40;
+      var barLife = new Sprite();
+      barLife.color = "red";
+      barLife.x = 250;
+      barLife.y = 5;
+      barLife.w = life;
+      barLife.h = 5;
+
+      var land = new Sprite();
+      land.color = "white";
+      land.x = Math.random() * ((eCanvas.width-40) - 40) + 40;
+      land.y = Math.random() * ((eCanvas.height-10) - 100) + 100;
+      land.w = 25;
+      land.h = 5;
+
+      var placar = 0;
+
       var acelerandoX = false;
       var acelerandoY = false;
 
@@ -25,35 +58,97 @@
       var factor = 30;
       var atual = new Date();
       var anterior = new Date();
+	  var running = true;
 
       desenha();
 
-      function desenha() {
-        requestAnimationFrame(desenha);
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, eCanvas.width, eCanvas.height);
-        atual = new Date();
-        dt = (atual - anterior) / 1000;
-        ctx.fillStyle = "green";
-        ctx.fillRect(20, 20, fuel, 5);
-        ctx.strokeRect(20, 20, fuel, 5);
-        if(acelerandoX == true && fuel > 0) {
-           fuel = fuel - 5*dt;
-        }
-        if(acelerandoY == true && fuel > 0) {
-          fuel = fuel - 15*dt;
-        }
-        azul.mover(dt);
-        azul.desenhar(ctx);
-        if(azul.y > eCanvas.height) {
-            azul.x = 150;
-            azul.y = 0;
-            azul.vy = 0;
-            azul.ay = 0;
-            fuel = 100;
-        }
-        anterior = atual;
+      function reseta() {
+        azul.x = 150;
+        azul.y = 10;
+        azul.vy = 0;
+        azul.ay = 0;
+        fuel = 100;
       }
+
+      function desenha() {
+	    if(running) {
+			requestAnimationFrame(desenha);
+			ctx.drawImage(fundo, 0, 0);
+			//ctx.fillStyle = "white";
+			//ctx.fillRect(0, 0, eCanvas.width, eCanvas.height);
+			atual = new Date();
+			dt = (atual - anterior) / 1000;
+			if(acelerandoX == true && fuel > 0) {
+				fuel = fuel - 5*dt;
+			}
+			if(acelerandoY == true && fuel > 0) {
+				fuel = fuel - 15*dt;
+			}
+			barFuel.w = fuel;
+			barLife.w = life;
+			azul.mover(dt);
+			if(Math.abs(azul.vy) < 28 && Math.abs(azul.vx) < 10){
+				azul.color = "blue";
+			}
+			else {
+				azul.color = "red";
+			}
+			if(azul.collide(land)) {
+				if((azul.color == "blue") && (land.y + land.h >= azul.y + azul.h)) {
+					if(confirm('Parabéns você conseguiu, Deseja continuar?')){
+						atual = new Date();
+						reseta();
+						life = 40;
+						land.x = Math.random() * ((eCanvas.width-40) - 40) + 40;
+						land.y = Math.random() * ((eCanvas.height-20) - 250) + 250;
+						placar = placar + 1;
+					}
+				else{
+					running = false;
+				}
+				}
+				else {
+					reseta();
+					if(life > 0) {
+						life = life - 10;
+					}
+					else {
+						life = 40;
+						land.x = Math.random() * ((eCanvas.width-40) - 40) + 40;
+						land.y = Math.random() * ((eCanvas.height-20) - 250) + 250;
+						placar = 0;
+					}
+				}
+			}
+			if((azul.x + azul.w > eCanvas.width) || (azul.x - azul.w < 0)) {
+				azul.vx = -azul.vx;
+			}
+			if(azul.y - azul.h < 0) {
+				azul.vy = 60;
+			}
+			if((azul.y > eCanvas.height)||(fuel <= 0)) {
+				reseta();
+				if(life > 0) {
+					life = life - 10;
+				}
+				else {
+					life = 40;
+					land.x = Math.random() * ((eCanvas.width-40) - 40) + 40;
+					land.y = Math.random() * ((eCanvas.height-20) - 250) + 250;
+					placar = 0;
+				}
+			}
+			barFuel.desenhar(ctx);
+			barLife.desenhar(ctx);
+			azul.desenhar(ctx);
+			land.desenhar(ctx);
+			ctx.fillStyle = "white";
+			ctx.fillText("Placar: "+placar,150,12);
+			ctx.fillText("Fuel: ",5,11);
+			ctx.fillText("Life: ",225,12);
+			anterior = atual;
+      }
+	}
 
       addEventListener("keydown",function(e){
         switch (e.keyCode) {
@@ -73,6 +168,11 @@
             azul.ay = +100;
             acelerandoY = true;
             break;
+		  case 80:
+			running = !running;
+			reseta();
+			desenha();
+			break;
         }
       });
 
